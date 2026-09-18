@@ -41,6 +41,38 @@ def rodar_analise(mensagem: str) -> str:
     return analise.model_dump_json(indent=2)
 
 
+CSS_CUSTOMIZADO = """
+:root, .dark {
+    --body-background-fill: #000000;
+    --background-fill-primary: #000000;
+    --background-fill-secondary: #0d0d0d;
+    --border-color-primary: #ff8c1a;
+}
+body, .gradio-container {
+    background-color: #000000 !important;
+}
+#component-0, .block {
+    background-color: #0d0d0d !important;
+}
+.tab-nav button.selected {
+    color: #ff8c1a !important;
+    border-color: #ff8c1a !important;
+}
+button.primary {
+    background: #ff8c1a !important;
+    border-color: #ff8c1a !important;
+}
+.message.user {
+    background: #ff8c1a !important;
+    color: #000000 !important;
+}
+.message.bot {
+    background: #1a1a1a !important;
+    border: 1px solid #ff8c1a !important;
+}
+"""
+
+
 def construir_interface() -> gr.Blocks:
     with gr.Blocks(title="Assistente de Nutrição") as demo:
         gr.Markdown("# Assistente de Nutrição")
@@ -50,7 +82,13 @@ def construir_interface() -> gr.Blocks:
         )
 
         with gr.Tab("Chat"):
-            chatbot = gr.Chatbot(label="Assistente")
+            chatbot = gr.Chatbot(
+                label="Assistente",
+                height=480,
+                avatar_images=(None, "🥗"),
+                placeholder="**Assistente de Nutrição**\n\nMande uma mensagem para começar a conversa.",
+                buttons=["copy_all"],
+            )
             entrada = gr.Textbox(
                 label="Sua mensagem",
                 placeholder="Ex: tenho intolerância a lactose, o que posso comer no café da manhã?",
@@ -74,5 +112,6 @@ if __name__ == "__main__":
     interface.launch(
         server_name="127.0.0.1",
         server_port=7860,
-        theme=gr.themes.Soft(),
+        theme=gr.themes.Soft(primary_hue="orange", secondary_hue="orange"),
+        css=CSS_CUSTOMIZADO,
     )
