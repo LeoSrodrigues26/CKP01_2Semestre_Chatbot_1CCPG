@@ -19,9 +19,12 @@ chain_chat = construir_chain_chat()
 
 
 def responder_chat(mensagem: str, historico_ui: list) -> tuple[str, list]:
-    """Callback do componente de chat do Gradio."""
+    """Callback do componente de chat do Gradio (formato 'messages')."""
     resposta = chain_chat.predict(input=mensagem)
-    historico_ui = historico_ui + [(mensagem, resposta)]
+    historico_ui = historico_ui + [
+        {"role": "user", "content": mensagem},
+        {"role": "assistant", "content": resposta},
+    ]
     return "", historico_ui
 
 
@@ -39,15 +42,15 @@ def rodar_analise(mensagem: str) -> str:
 
 
 def construir_interface() -> gr.Blocks:
-    with gr.Blocks(title="NutriBot — Assistente de Nutrição") as demo:
-        gr.Markdown("# 🥗 NutriBot — Assistente de Nutrição (CKP01)")
+    with gr.Blocks(title="Assistente de Nutrição") as demo:
+        gr.Markdown("# Assistente de Nutrição")
         gr.Markdown(
             "Converse livremente na aba **Chat** ou use **Análise "
             "estruturada** para ver a saída validada em Pydantic v2."
         )
 
         with gr.Tab("Chat"):
-            chatbot = gr.Chatbot(label="NutriBot")
+            chatbot = gr.Chatbot(label="Assistente")
             entrada = gr.Textbox(
                 label="Sua mensagem",
                 placeholder="Ex: tenho intolerância a lactose, o que posso comer no café da manhã?",
@@ -68,4 +71,8 @@ def construir_interface() -> gr.Blocks:
 
 if __name__ == "__main__":
     interface = construir_interface()
-    interface.launch(server_name="127.0.0.1", server_port=7860)
+    interface.launch(
+        server_name="127.0.0.1",
+        server_port=7860,
+        theme=gr.themes.Soft(),
+    )
